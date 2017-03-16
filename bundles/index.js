@@ -60,7 +60,7 @@ bm.process = (text) => {
           ai.debug(`bundle: ${bundle.name}, scan ${b}/${c}`)
 
           // trigger command
-          cmd.t(ai)
+          cmd.t(cmd, ai, cleanText)
 
           // exit process loop
           break loop1

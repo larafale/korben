@@ -1,0 +1,16 @@
+{
+  "name": "korben",
+  "version": "1.0.0",
+  "description": "personal assistant",
+  "main": "start.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Louis Grellet <as1cron@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "cli-color": "^1.2.0",
+    "node-record-lpcm16": "^0.2.0",
+    "snowboy": "^1.1.0"
+  }
+}

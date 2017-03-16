@@ -1,31 +1,26 @@
 
 const ai = require('./lib/ai')
-const bundles = require('./bundles')
-const snowboy = require('./lib/snowboy')
-const gspeech = require('./lib/gspeech')
 
 
-console.log(bundles)
+ai.init({
+  debug: true,
+  name: 'korben',         // ai name
+  hotword: 'korben',      // hotword (filename & text)
+  sensitivity: '0.5',     // hotword sensitivity
+  lang: 'fr-FR',          // stt language
+  timeout: 10000,          // stt timeout
+  voice: 'Thomas',        // fr:Thomas,Amelie  en:Alex
+}, () => {
 
-// initial dialog
-ai.say.bot('Hello')
-ai.say.user('')
-
-
-
-snowboy.config({
-  hotword: (index, hotword) => {
-
-    ai.log('hotword detected')
-    ai.sound('ding')
-
-    if(ai.online){
-      console.log("SNOWBOY - NO GOOGLE")
-    } else {
-      gspeech.start()
-    }
-  }
+  // initial dialog
+  ai.say.bot('Hello')
+  ai.say.user('')
+  
 })
+
+
+
+
 
 
 

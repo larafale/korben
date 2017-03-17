@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const fs = require('fs')
 const path = require('path')
 const clc = require('cli-color')
@@ -5,6 +6,13 @@ const exec = require('child_process').exec
 
 // exec command
 module.exports.exec = exec
+
+// detect string language
+// lang('bonjour') => fra
+module.exports.lang = require('franc-min')
+module.exports.isLang = (lang, samples = []) => {
+  return _.some(samples, (s)=>module.exports.lang(s) == lang)
+}
 
 // deep merge objects
 module.exports.merge = require('deepmerge')

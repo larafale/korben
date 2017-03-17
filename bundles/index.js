@@ -48,11 +48,16 @@ bm.process = (speech, dryRun, callback = ()=>{}) => {
     dryRun = false
   }
 
+  const finalCallback = () => {
+    callback()
+    ai.debug(`--------------------- end --`)
+  }
+
   const text = utils.nospecials(utils.latin(speech))
   let command
  
-  ai.debug(`------------------`)
-  ai.debug(`processing command "${text}"`)
+  ai.debug(`-- start -------------------`)
+  ai.debug(`speech: "${text}"`)
 
   // loop throught bundles list
   loop1:
@@ -68,8 +73,9 @@ bm.process = (speech, dryRun, callback = ()=>{}) => {
         // it's a match
         if(match){
 
-          ai.debug(`------------------`)
-          ai.debug(`bundle: ${bundle.name}, scan ${b}/${c}`)
+          // ai.debug(`bundle: ${bundle.name}, scan ${b}/${c}`)
+          ai.debug(`cmd: ${bundle.name} ${b}/${c}`)
+          ai.debug(`desc: ${cmd.d}`)
 
           // attach context to command
           cmd.ctx = { args: match, speech, text }
@@ -91,11 +97,11 @@ bm.process = (speech, dryRun, callback = ()=>{}) => {
   // if command found
   if(command){
     dryRun
-      ? callback(null, command)
-      : command.t(command.ctx.args, ai, callback)
+      ? finalCallback(null, command)
+      : command.t(command.ctx.args, ai, finalCallback)
   }else{
     const e = `command "${text}" not found`
     ai.debug(e)
-    callback(e)
+    finalCallback(e)
   }
 }

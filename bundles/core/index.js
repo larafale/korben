@@ -9,36 +9,37 @@ bundle.name = 'core'
 
 bundle.cmds = [
 
-  { r: /(^ca va|tu vas bien)/, t: (cmd, ai) => {
-    ai.say.bot('ca roule')
+  { d: 'Quit A.I',
+    r: /^eteins toi/, t: function(args, ai, cb){
+      ai.say.bot('au revoir')
+      utils.exec(`kill ${process.pid}`)
+      cb()
   }},
 
-  // quit program
-  { r: /^eteins toi/, t: (cmd, ai) => {
-    ai.say.bot('au revoir')
-    utils.exec(`kill ${process.pid}`)
+  { d: 'Close STT process',
+    r: /^(annule|annuler|kit)$/, t: function(args, ai, cb){
+      gspeech.close()
+      ai.say.bot('ok')
+      cb()
   }},
 
-  // close stt process
-  { r: /(annule|kit)/, t: (cmd, ai) => {
-    gspeech.close()
-    ai.say.bot('ok')
+  { d: 'Show A.I current config',
+    r: /(donne|affiche).*config/, t: function(args, ai, cb){
+      ai.debug('current config', ai.config)
+      cb()
   }},
 
-  // show config
-  { r: /(donne|affiche).*config/, t: (cmd, ai) => {
-    ai.debug('current config', ai.config)
+  { d: 'Show A.I all commands',
+    r: /(donne|affiche).*commande/, t: function(args, ai, cb){
+      bundles.debug()
+      cb()
   }},
 
-  // show command
-  { r: /(donne|affiche).*commande/, t: (cmd, ai) => {
-    bundles.debug()
-  }},
-
-  // what time is it
-  { r: /quelle heure/, t: (cmd, ai) => {
-    const time = utils.dateFormat('HH:MM')
-    ai.say.bot(`il est ${time}`)
+  { d: 'Return current time',
+    r: /quelle heure/, t: function(args, ai, cb){
+      const time = utils.dateFormat('HH:MM')
+      ai.say.bot(`il est ${time}`)
+      cb()
   }},
 
 ]

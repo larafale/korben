@@ -1,4 +1,4 @@
-let ai // dont require('ai') before the init call
+let ai = require('../lib/ai')// dont require('ai') before the init call
 const utils = require('../utils')
 const bundles = utils.dirs(__dirname)
 
@@ -31,17 +31,28 @@ bm.debug = () => {
   for (const b in bm.list) {
     const bundle = bm.list[b]
     ai.debug(`------------------`)
-    ai.debug(`bundle: ${bundle.name}`)
+    ai.debug(`${bundle.name} bundle (${bundle.cmds.length} commands)`)
+    ai.debug(`------------`)
     for (const c in bundle.cmds) {
       const cmd = bundle.cmds[c]
-      ai.debug(`${b}/${c}: ${cmd.r}`)
+      ai.debug(`${b}/${c}: ${cmd.r}  |  ${cmd.d}`)
     }
   }
 }
 
-bm.process = (text) => {
+// dryRun don't execute found command (used in test)
+//
+bm.process = (speech, dryRun, callback = ()=>{}) => {
+  if(typeof dryRun == 'function'){
+    callback = dryRun
+    dryRun = false
+  }
 
-  const cleanText = utils.nospecials(utils.latin(text))
+  const text = utils.nospecials(utils.latin(speech))
+  let command
+ 
+  ai.debug(`------------------`)
+  ai.debug(`processing command "${text}"`)
 
   // loop throught bundles list
   loop1:
@@ -52,22 +63,39 @@ bm.process = (text) => {
   loop2:
       for (const c in bundle.cmds) {
         const cmd = bundle.cmds[c]
+        const match = text.match(cmd.r)
 
         // it's a match
-        if(cmd.r.test(cleanText)){
+        if(match){
 
           ai.debug(`------------------`)
           ai.debug(`bundle: ${bundle.name}, scan ${b}/${c}`)
 
-          // trigger command
-          cmd.t(cmd, ai, cleanText)
+          // attach context to command
+          cmd.ctx = { args: match, speech, text }
+          cmd.bid = parseInt(b) // bundle id
+          cmd.cid = parseInt(c) // command id
+          // trigger command (*this* inside the function refer to fully loaded cmd)
+          // we just inject *args* for convinience
+          //cmd.t(cmd.ctx.args, ai, )
+          // hydrate command so we can return it later
+          command = cmd
 
           // exit process loop
           break loop1
         }
       }
     }
-    
-  ai.debug(`------------------`)
 
+
+  // if command found
+  if(command){
+    dryRun
+      ? callback(null, command)
+      : command.t(command.ctx.args, ai, callback)
+  }else{
+    const e = `command "${text}" not found`
+    ai.debug(e)
+    callback(e)
+  }
 }

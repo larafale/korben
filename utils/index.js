@@ -4,31 +4,48 @@ const path = require('path')
 const clc = require('cli-color')
 const exec = require('child_process').exec
 
+const utils = module.exports = {}
+
 // exec command
-module.exports.exec = exec
+utils.exec = exec
+
+// notifier
+utils.notify = (message, options = {}) => {
+  const n = require('node-notifier')
+  n.notify(utils.merge({
+    title: 'Korben',
+    message
+  }, options))
+} 
+  
+// say something
+utils.say = (text) => {
+  if(typeof text != 'string') return
+  utils.exec(`say "${text}" -v Alex`)
+}
 
 // detect string language
 // lang('bonjour') => fra
-module.exports.lang = require('franc-min')
-module.exports.isLang = (lang, samples = []) => {
-  return _.some(samples, (s)=>module.exports.lang(s) == lang)
+utils.lang = require('franc-min')
+utils.isLang = (lang, samples = []) => {
+  return _.some(samples, (s)=>utils.lang(s) == lang)
 }
 
 // deep merge objects
-module.exports.merge = require('deepmerge')
+utils.merge = require('deepmerge')
 
 // date module
-module.exports.dateFormat = require('./date')
+utils.dateFormat = require('./date')
 
 // only latin (no accent)
-module.exports.latin = require('./latin')
+utils.latin = require('./latin')
 
 // replace special chars with space
-module.exports.nospecials = (text) => {
+utils.nospecials = (text) => {
   return text.replace(/[^a-zA-Z0-9]/g, ' ')
 }
 
-module.exports.debug = (text, data) => {
+utils.debug = (text, data) => {
   process.stdout.write([
     '\n',
     clc.blackBright(`DEBUG : ${text}`),
@@ -37,7 +54,7 @@ module.exports.debug = (text, data) => {
 }
 
 
-module.exports.dirs = (srcpath) => {
+utils.dirs = (srcpath) => {
   return fs.readdirSync(srcpath)
     .filter(file => fs.statSync(path.join(srcpath, file)).isDirectory())
 }

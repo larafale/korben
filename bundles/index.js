@@ -1,4 +1,4 @@
-let ai = require('../lib/ai')// dont require('ai') before the init call
+let ai = require(__dirname+'/../lib/ai')// dont require('ai') before the init call
 const utils = require('../utils')
 const bundles = utils.dirs(__dirname)
 
@@ -16,13 +16,17 @@ bm.init = () => {
   })
 }
 
-// active list of bundles
+// loaded list of bundles
 bm.list = []
 
 // add a bundle
 bm.add = (name) => {
   const bundle = require(__dirname+'/'+name)
   ai.debug(`adding bundle "${name}"`)
+
+  // init bundle
+  bundle.init && bundle.init()
+  // add to list
   bm.list.push(bundle)
 }
 
@@ -48,8 +52,14 @@ bm.process = (speech, dryRun, callback = ()=>{}) => {
     dryRun = false
   }
 
-  const finalCallback = () => {
-    callback()
+  const finalCallback = (err, cmd) => {
+    // context error
+    if(err){
+      ai.debug(`err: ${err}`)
+      ai.say.err(err)
+    }
+
+    callback(err, cmd)
     ai.debug(`--------------------- end --`)
   }
 
@@ -81,7 +91,6 @@ bm.process = (speech, dryRun, callback = ()=>{}) => {
           cmd.ctx = { args: match, speech, text }
           cmd.bid = parseInt(b) // bundle id
           cmd.cid = parseInt(c) // command id
-          // trigger command (*this* inside the function refer to fully loaded cmd)
           // we just inject *args* for convinience
           //cmd.t(cmd.ctx.args, ai, )
           // hydrate command so we can return it later
@@ -98,10 +107,9 @@ bm.process = (speech, dryRun, callback = ()=>{}) => {
   if(command){
     dryRun
       ? finalCallback(null, command)
-      : command.t(command.ctx.args, ai, finalCallback)
+      // trigger real command (*this* inside the function refer to fully loaded cmd)
+      : command.t(command, command.ctx.args, ai, finalCallback)
   }else{
-    const e = `command "${text}" not found`
-    ai.debug(e)
-    finalCallback(e)
+    finalCallback(`command not found`)
   }
 }

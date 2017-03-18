@@ -1,45 +1,48 @@
+// author: larafale
+// core module
 
 const utils = require('../../utils')
-const bundles = require('../')
-const bundle = module.exports = {}
-
 const gspeech = require('../../lib/gspeech')
+const bundles = require('../')
+const bundle = module.exports = { 
+  name: 'core'
+}
 
-bundle.name = 'core'
+
 
 bundle.cmds = [
 
   { d: 'Quit A.I',
-    r: /^eteins toi/, t: function(args, ai, cb){
+    r: /^eteins toi/, t: (cmd, args, ai, cb) => {
       ai.say.bot('au revoir')
       utils.exec(`kill ${process.pid}`)
-      cb()
+      cb(null, cmd)
   }},
 
   { d: 'Close STT process',
-    r: /^(annule|annuler|kit)$/, t: function(args, ai, cb){
+    r: /^(annule|annuler|kit)$/, t: (cmd, args, ai, cb) => {
       gspeech.close()
       ai.say.bot('ok')
-      cb()
+      cb(null, cmd)
   }},
 
   { d: 'Show A.I current config',
-    r: /(donne|affiche).*config/, t: function(args, ai, cb){
+    r: /(donne|affiche).*config/, t: (cmd, args, ai, cb) => {
       ai.debug('current config', ai.config)
-      cb()
+      cb(null, cmd)
   }},
 
   { d: 'Show A.I all commands',
-    r: /(donne|affiche).*commande/, t: function(args, ai, cb){
+    r: /(donne|affiche).*commande/, t: (cmd, args, ai, cb) => {
       bundles.debug()
-      cb()
+      cb(null, cmd)
   }},
 
   { d: 'Return current time',
-    r: /quelle heure/, t: function(args, ai, cb){
+    r: /quelle heure/, t: (cmd, args, ai, cb) => {
       const time = utils.dateFormat('HH:MM')
       ai.say.bot(`il est ${time}`)
-      cb()
+      cb(null, cmd)
   }},
 
 ]

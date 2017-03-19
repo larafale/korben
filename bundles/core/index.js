@@ -3,11 +3,13 @@
 
 const utils = require('../../utils')
 const gspeech = require('../../lib/gspeech')
-const bundles = require('../')
-const bundle = module.exports = { 
-  name: 'core'
-}
+const bundles = require('../../lib/bundles')
 
+
+const bundle = module.exports = { 
+  name: 'core',
+  ctx: {}
+}
 
 
 bundle.cmds = [
@@ -28,11 +30,11 @@ bundle.cmds = [
 
   { d: 'Show A.I current config',
     r: /(donne|affiche).*config/, t: (cmd, args, ai, cb) => {
-      ai.debug('current config', ai.config)
+      ai.say.bot(`${utils.pjson(ai.config)}`, 'm')
       cb(null, cmd)
   }},
 
-  { d: 'Show A.I all commands',
+  { d: 'Show all A.I commands',
     r: /(donne|affiche).*commande/, t: (cmd, args, ai, cb) => {
       bundles.debug()
       cb(null, cmd)
@@ -46,4 +48,4 @@ bundle.cmds = [
   }},
 
 ]
-  
+

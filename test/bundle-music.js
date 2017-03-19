@@ -93,7 +93,7 @@ describe('music bundle', function() {
     ai.process('baisse le volume mon gars', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       assert.equal(cmd.ctx.args[1], 'baisse')
-      should.not.exist(cmd.ctx.args[2])
+      should.not.exist(cmd.ctx.args[3])
       next()
     })
   })
@@ -102,7 +102,7 @@ describe('music bundle', function() {
     ai.process('tu peux augmenter le volume mon gars', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       assert.equal(cmd.ctx.args[1], 'augmente')
-      should.not.exist(cmd.ctx.args[2])
+      should.not.exist(cmd.ctx.args[3])
       next()
     })
   })
@@ -111,7 +111,7 @@ describe('music bundle', function() {
     ai.process('met le volume à 25%', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       assert.equal(cmd.ctx.args[1], 'met')
-      assert.equal(cmd.ctx.args[2], '25')
+      assert.equal(cmd.ctx.args[3], '25')
       next()
     })
   })

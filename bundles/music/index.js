@@ -4,7 +4,9 @@
 // install: brew install shpotify
 
 const utils = require('../../utils')
-const bundles = require('../')
+const bundles = require('../../lib/bundles')
+
+
 const bundle = module.exports = { 
   name: 'music',
   ctx: {
@@ -16,6 +18,7 @@ const bundle = module.exports = {
     }
   }
 }
+
 
 // shorthand
 const ctx = bundle.ctx
@@ -124,7 +127,7 @@ bundle.cmds = [
   }},
 
   { d: 'Finds an artist and plays it',
-    r: /(jou|envoi|met|mai).*(moi|nous|du|nous du|moi du) (.+)/, t: (cmd, args, ai, cb) => {
+    r: /(joue|met|mai|envoi).*(moi|nous|du)\s(.+)/, t: (cmd, args, ai, cb) => {
       const song = args[3]
       utils.exec(`spotify play artist "${song}"`, (err, stdout, stdin) => {
         const e = err || (/no results/gi.test(stdout) && `no music found for "${song}"`)
@@ -137,7 +140,7 @@ bundle.cmds = [
   }},
 
   { d: 'Finds a song and plays it',
-    r: /(jou|envoi|met|mai).*(son|musique) (.+)/, t: (cmd, args, ai, cb) => {
+    r: /(jou|met|mai|envoi).*(son|musique)\s(.+)/, t: (cmd, args, ai, cb) => {
       const song = args[3]
       utils.exec(`spotify play "${song}"`, (err, stdout, stdin) => {
         const e = err || (/no results/gi.test(stdout) && `no music found for "${song}"`)
@@ -150,10 +153,10 @@ bundle.cmds = [
   }},
 
   { d: 'Adjust volume',
-    r: /(diminu|baisse|augmente|met|mai).*volume[^\d]*(\d{1,3})?.*/, t: (cmd, args, ai, cb) => {
-      let volume = args[3] || ((/(diminu|baisse)/.test(args[1])) ? 'down' : 'up')
-      utils.exec(`spotify vol ${volume}`)
-      ai.debug(`volume: ${volume}`)
+    r: /(diminu|baisse|augmente|met|mai).*(volume)[^\d]*(\d{1,3})*/, t: (cmd, args, ai, cb) => {
+      let vol = args[3] || ((/(augmente)/.test(args[1])) ? 'up' : 'down')
+      utils.exec(`spotify vol ${vol}`)
+      ai.debug(`volume: ${vol}`)
       cb(null, cmd)
   }},
 

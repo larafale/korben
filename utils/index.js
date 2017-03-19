@@ -31,6 +31,11 @@ utils.isLang = (lang, samples = []) => {
   return _.some(samples, (s)=>utils.lang(s) == lang)
 }
 
+// pretty json
+utils.pjson = (object, space = 2) => {
+  return JSON.stringify(object, null, space)
+}
+
 // deep merge objects
 utils.merge = require('deepmerge')
 

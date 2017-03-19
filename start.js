@@ -10,12 +10,15 @@ ai.init({
     voice: 'Thomas',              // voice => fr:Thomas,Amelie  en:Alex
   },
   hotword: {                      // hotword config
-    word: 'korben',               // word
-    sensitivity: '0.4',           // sensitivity
+    word: [                       // words
+      'korben-louis', 
+      'korben-olivia'
+    ],
+    sensitivity: '0.3',           // sensitivity
   },
   stt: {                          // speech to text
     lang: 'fr-FR',                // language
-    timeout: 5000,               // timeout
+    timeout: 6000,                // timeout
   }
 }, () => {
 

@@ -12,9 +12,8 @@ ai.init({
   hotword: {                      // hotword config
     word: [                       // words
       'korben-louis', 
-      'korben-olivia'
     ],
-    sensitivity: '0.3',           // sensitivity
+    sensitivity: '0.4',           // sensitivity
   },
   stt: {                          // speech to text
     lang: 'fr-FR',                // language

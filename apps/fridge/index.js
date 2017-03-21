@@ -21,7 +21,7 @@ app.add('Add an item to list',
   /(liste|ligne|panier)/,
   (cmd, intent, ai, cb) => {
     cmd.append(`list.txt`, '\r\n'+intent.p1, (err) => {
-      ai.say.bot(`ok ${item}`)
+      ai.say.bot(`ok ${intent.p1}`)
       cb(null, cmd)
     })
   })

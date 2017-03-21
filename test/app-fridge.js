@@ -36,7 +36,7 @@ describe('fridge app', function() {
 
   
   it('Add an item to list', (next)=>{ cid++
-    ai.process('tu peux ajouter du lait de coco a la liste de course', true, (err, cmd)=>{
+    ai.process('tu peux ajouter du lait de coco a la liste', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       assert.equal(cmd.intent.p1, 'lait de coco')
       next()

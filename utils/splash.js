@@ -16,4 +16,5 @@ module.exports = () => {
   )
 
   process.stdout.write('\n')
+  process.stdout.write('\n')
 }

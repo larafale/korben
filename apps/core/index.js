@@ -47,7 +47,7 @@ app.add('Show all A.I commands',
   /affiche/, 
   /command/,
   (cmd, intent, ai, cb) => {
-    apps.debug()
+    apps.showCommands((t) => ai.say.bot(t, 'm'))
     cb(null, cmd)
   })
 

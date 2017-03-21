@@ -5,6 +5,7 @@ const ai = require('./lib/ai')
 
 ai.init({
   env: 'debug',                   // real|debug|test
+  mode: 'chat',                   // speech|chat
   bot: {                          // ai infos
     name: 'korben',               // name
     voice: 'Thomas',              // voice => fr:Thomas,Amelie  en:Alex
@@ -27,6 +28,8 @@ ai.init({
 
   // initial dialog
   ai.say.bot('Hello')
+  process.stdout.write('\n')
+  ai.say.user('')
   
 })
 

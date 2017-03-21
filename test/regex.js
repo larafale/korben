@@ -66,8 +66,8 @@ describe('fridge bundle', function() {
           b,
         }
 
-        console.log('-----------')
-        console.log(output)
+        // console.log('-----------')
+        // console.log(output)
 
         assert.lengthOf(match, 10)
         assert.equal(text.verb, verb)

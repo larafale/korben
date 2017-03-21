@@ -8,20 +8,19 @@ const debug = (err, cmd)=>{
   console.log(err, cmd)
 }
 
-
-describe('music bundle', function() {
+describe('music app', function() {
 
   before((next) => {
     ai.init({ env: 'test' }, () => {
-      ai.bm.list = []
+      ai.apps.list = []
       next()
     })
   })
 
-  it('load bundle', function() {
+  it('load app', function() {
     assert(ai.config.env, 'test')
-    ai.bm.add('music')
-    assert.lengthOf(ai.bm.list, 1)
+    ai.apps.add('music')
+    assert.lengthOf(ai.apps.list, 1)
   })
 
   it('bla bla bla', (next)=>{ 
@@ -37,7 +36,7 @@ describe('music bundle', function() {
 
   
   it('Resumes playback where last left off', (next)=>{ cid++
-    ai.process('envoi du son', true, (err, cmd)=>{
+    ai.process('envoi de la musique', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       next()
     })
@@ -65,53 +64,53 @@ describe('music bundle', function() {
   })
 
   it('Music info', (next)=>{ cid++
-    ai.process('c\'est quoi le titre de la chanson', true, (err, cmd)=>{
+    ai.process('tu peux me dire le titre de la chanson', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
-      next()
-    })
-  })
-
-  it('Finds an artist and plays it', (next)=>{ cid++
-    ai.process('met du jack johnson', true, (err, cmd)=>{
-      const args = cmd && cmd.ctx.args
-      assert.equal(cid, cmd.cid)
-      assert.equal(args[3], 'jack johnson')
       next()
     })
   })
 
   it('Finds a song by name and plays it', (next)=>{ cid++
-    ai.process('joue la chanson Adele turning tables', true, (err, cmd)=>{
-      const args = cmd && cmd.ctx.args
+    ai.process('joue moi turning tables par adele', true, (err, cmd)=>{
+      const intent = cmd && cmd.intent
       assert.equal(cid, cmd.cid)
-      assert.equal(args[3], 'Adele turning tables')
+      assert.equal(intent.p1, 'turning tables')
+      assert.equal(intent.p2, 'adele')
       next()
     })
   })
 
-  it('Descrease volume', (next)=>{ cid++
-    ai.process('baisse le volume mon gars', true, (err, cmd)=>{
+  it('Finds an artist and plays it', (next)=>{ cid++
+    ai.process('tu peux jouer du jack johnson', true, (err, cmd)=>{
+      const intent = cmd && cmd.intent
       assert.equal(cid, cmd.cid)
-      assert.equal(cmd.ctx.args[1], 'baisse')
-      should.not.exist(cmd.ctx.args[3])
+      assert.equal(intent.p1, 'jack johnson')
+      next()
+    })
+  })
+
+
+  it('Descrease volume', (next)=>{ cid++
+    ai.process('baisse le volume', true, (err, cmd)=>{
+      assert.equal(cid, cmd.cid)
+      assert.equal(cmd.intent.action, 'baisse')
       next()
     })
   })
 
   it('Increase volume', (next)=>{
-    ai.process('tu peux augmenter le volume mon gars', true, (err, cmd)=>{
+    ai.process('tu peux augmenter le volume', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
-      assert.equal(cmd.ctx.args[1], 'augmente')
-      should.not.exist(cmd.ctx.args[3])
+      assert.equal(cmd.intent.action, 'augmenter')
       next()
     })
   })
 
-  it('Custom volume', (next)=>{
-    ai.process('met le volume à 25%', true, (err, cmd)=>{
+  it('Custom volume', (next)=>{ cid++
+    ai.process('met le volume sur 25', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
-      assert.equal(cmd.ctx.args[1], 'met')
-      assert.equal(cmd.ctx.args[3], '25')
+      assert.equal(cmd.intent.action, 'met')
+      assert.equal(cmd.intent.p2, '25')
       next()
     })
   })

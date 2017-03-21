@@ -4,20 +4,23 @@ const should = require('chai').should()
 const ai = require('../lib/ai')
 let cid = -1
 
+const debug = (err, cmd)=>{
+  console.log(err, cmd)
+}
 
-describe('core bundle', ()=>{
+describe('core app', ()=>{
 
   before((next) => {
     ai.init({ env: 'test' }, () => {
-      ai.bm.list = []
+      ai.apps.list = []
       next()
     })
   })
 
-  it('load bundle', function() {
+  it('load app', function() {
     assert(ai.config.env, 'test')
-    ai.bm.add('core')
-    assert.lengthOf(ai.bm.list, 1)
+    ai.apps.add('core')
+    assert.lengthOf(ai.apps.list, 1)
   })
 
   it('bla bla bla', (next)=>{ 
@@ -28,17 +31,17 @@ describe('core bundle', ()=>{
     })
   })
 
-  // Test command in order prior to their position in bundle.cmds
+  // Test command in order prior to their position in app.cmds
 
   it('Quit A.I', (next)=>{ cid++
-    ai.process('eteins toi', true, (err, cmd)=>{
+    ai.process('quit le program', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       next()
     })
   })
 
   it('Close STT process', (next)=>{ cid++
-    ai.process('annule', true, (err, cmd)=>{
+    ai.process('annule la commande', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       next()
     })
@@ -52,14 +55,14 @@ describe('core bundle', ()=>{
   })
 
   it('Show A.I all commands', (next)=>{ cid++
-    ai.process('donne moi les commandes', true, (err, cmd)=>{
+    ai.process('affiche moi les commandes', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       next()
     })
   })
 
   it('Return current time', (next)=>{ cid++
-    ai.process('il est quelle heure mec', true, (err, cmd)=>{
+    ai.process('tu peux me donner l heure', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
       next()
     })

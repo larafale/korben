@@ -17,7 +17,7 @@ ai.init({
   },
   stt: {                          // speech to text
     lang: 'fr-FR',                // language
-    timeout: 6000,                // timeout
+    timeout: 8000,                // timeout
   }
 }, () => {
 

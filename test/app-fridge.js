@@ -8,20 +8,19 @@ const debug = (err, cmd)=>{
   console.log(err, cmd)
 }
 
-
-describe('fridge bundle', function() {
+describe('fridge app', function() {
 
   before((next) => {
     ai.init({ env: 'test' }, () => {
-      ai.bm.list = []
+      ai.apps.list = []
       next()
     })
   })
 
-  it('load bundle', function() {
+  it('load app', function() {
     assert(ai.config.env, 'test')
-    ai.bm.add('fridge')
-    assert.lengthOf(ai.bm.list, 1)
+    ai.apps.add('fridge')
+    assert.lengthOf(ai.apps.list, 1)
   })
 
   it('bla bla bla', (next)=>{ 
@@ -39,7 +38,7 @@ describe('fridge bundle', function() {
   it('Add an item to list', (next)=>{ cid++
     ai.process('tu peux ajouter du lait de coco à la liste de course', true, (err, cmd)=>{
       assert.equal(cid, cmd.cid)
-      assert.equal(cmd.ctx.args[3], 'lait de coco')
+      assert.equal(cmd.intent.p1, 'lait de coco')
       next()
     })
   })

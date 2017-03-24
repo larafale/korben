@@ -5,25 +5,15 @@ const gspeech = require('../../lib/gspeech')
 const apps = require('../../lib/apps')
 
 
-const app = module.exports = { 
-  name: 'core',
-  cmds: [],
-  ctx: {}
-}
-
-
-app.init = (cb) => {}
-app.add = apps.createCommand(app)
-
+const app = module.exports = apps.create('core')
 
 
 app.add('Quit A.I',
   /(quit|etein)/, 
   /program/,
   (cmd, intent, ai, cb) => {
-    ai.say.bot('au revoir')
     utils.exec(`kill ${process.pid}`)
-    cb(null, cmd)
+    cb(null, cmd, 'au revoir')
   })
 
 app.add('Close STT process',
@@ -31,8 +21,7 @@ app.add('Close STT process',
   /command/,
   (cmd, intent, ai, cb) => {
     gspeech.close()
-    ai.say.bot('ok')
-    cb(null, cmd)
+    cb(null, cmd, 'ok')
   })
 
 app.add('Show A.I current config',
@@ -56,8 +45,7 @@ app.add('Return current time',
   'heure',
   (cmd, intent, ai, cb) => {
     const time = utils.dateFormat('HH:MM')
-    ai.say.bot(`il est ${time}`)
-    cb(null, cmd)
+    cb(null, cmd, `il est ${time}`)
   })
 
 

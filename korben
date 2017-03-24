@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+
+
+const splash = require('./utils/splash')
+const ai = require('./lib/ai')
+const cli = require('commander')
+
+cli
+  .version('0.0.1')
+  .option('-d, --debug', 'Set env to debug')
+  .option('-c, --cmd [command]', 'Send command to A.I and return')
+  .parse(process.argv)
+
+
+const cmd = (cli.cmd !== true && cli.cmd) || false
+const env = cli.debug ? 'debug' : 'real'
+
+
+
+ai.init({
+  env: env,                       // real|debug|test
+  cmd: cmd,                       // if cmd, cmd is run & ai close
+  bot: {                          // ai infos
+    name: 'korben',               // name
+    voice: 'Thomas',              // voice => fr:Thomas,Amelie  en:Alex
+  },
+  hotword: {                      // hotword config
+    word: [                       // words
+      'korben-louis', 
+    ],
+    sensitivity: '0.4',           // sensitivity
+  },
+  stt: {                          // speech to text
+    lang: 'fr-FR',                // language
+    timeout: 8000,                // timeout
+  }
+}, () => {
+
+  // if command mode, return process
+  if(cmd) return ai.process(cmd, { callee: 'cmd' })
+
+  // splash
+  if(ai.config.env != 'test') splash()
+
+  // initial dialog
+  ai.say.bot('Hello')
+  process.stdout.write('\n')
+  ai.say.user('')
+  
+})
+
+

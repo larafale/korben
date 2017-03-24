@@ -26,7 +26,7 @@ describe('music app', function() {
   it('bla bla bla', (next)=>{ 
     ai.process('bla bla bla', true, (err, cmd)=>{
       should.exist(err)
-      should.not.exist(cmd)
+      should.exist(cmd.err)
       next()
     })
   })

@@ -3,41 +3,20 @@
 // it controls the command https://github.com/hnarayanan/shpotify 
 // install with: brew install shpotify
 
-
 const utils = require('../../utils')
 const gspeech = require('../../lib/gspeech')
 const apps = require('../../lib/apps')
 
+const app = module.exports = apps.create('music')
 
-const app = module.exports = { 
-  name: 'music',
-  cmds: [],
-  ctx: {
-    playing: false,
-    info:  {
-      artist: '',
-      album: '',
-      track: ''
-    }
+// default context
+const ctx = app.ctx = {
+  playing: false,
+  info:  {
+    artist: '',
+    album: '',
+    track: ''
   }
-}
-
-
-app.init = (cb) => {
-  getStatus() // get current music info
-}
-
-app.add = apps.createCommand(app)
-
-
-// shorthand
-const ctx = app.ctx
-
-
-const debugInfo = (ai) => {
-  ai.debug(`artist: ${ctx.info.artist}`)
-  ai.debug(`track: ${ctx.info.track}`)
-  ai.debug(`album: ${ctx.info.album}`)
 }
 
 const parseMusic = (string) => {
@@ -57,25 +36,26 @@ const getStatus = (cb = ()=>{}) => {
     utils.exec(`spotify status`, (err, stdout, stdin) => {
       ctx.playing = !/currently paused/gi.test(stdout) 
       ctx.info = parseMusic(stdout)
-      if(ctx.info.artist) utils.notify(`${ctx.info.artist} - ${ctx.info.track}`)
       cb(ctx)
     })
-  }, 1000)
+  }, 0)
 }
 
 
 
+app.init = (cb) => {
+  getStatus() // get current music info
+}
 
 
 
 app.add('Play where last left off',
-  /(envoi|met)/, 
+  /(envo|met)/, 
   /(son|musique)$/,
   (cmd, intent, ai, cb) => {
     utils.exec(`spotify play`, (err, stdout, stdin) => {
       getStatus((ctx) => {
         if(!ctx.playing) return cb(`can't resume song`, cmd)
-        debugInfo(ai)
         cb(null, cmd)
       })
     })
@@ -90,34 +70,32 @@ app.add('Stop playback',
   })
 
 app.add('Play next song',
-  /(envoi|met)/, 
+  /(joue|envo|met)/, 
   /(son|musique|titre).*(apres|suivant)/,
   (cmd, intent, ai, cb) => {
     utils.exec(`spotify next`, (err, stdout, stdin) => {
       getStatus((ctx) => {
         if(!ctx.playing) return cb(`can't find next song`, cmd)
-        debugInfo(ai)
-        cb(null, cmd)
+        cb(null, cmd, ctx.info)
       })
     })
   })
 
 app.add('Play previous song',
-  /(envoi|met)/, 
-  /(son|musique|titre).*(avan|precedent)/,
+  /(joue|envo|met)/, 
+  /(son|musique|titre).*(avant|precedent)/,
   (cmd, intent, ai, cb) => {
     utils.exec(`spotify prev`, (err, stdout, stdin) => {
       getStatus((ctx) => {
         if(!ctx.playing) return cb(`can't find previous song`, cmd)
-        debugInfo(ai)
-        cb(null, cmd)
+        cb(null, cmd, ctx.info)
       })
     })
   })
 
 app.add('Music Info',
   /(donne|dire)/, 
-  /(son|musique|titre)/,
+  /(chanson|musique|titre)/,
   (cmd, intent, ai, cb) => {
     getStatus((ctx) => {
       // choose the language
@@ -137,8 +115,7 @@ app.add('Music Info',
         say "album ${ctx.info.album}" ${voice};
       `)
 
-      debugInfo(ai)
-      cb(null, cmd)
+      cb(null, cmd, ctx.info)
     })
   })
 
@@ -151,12 +128,9 @@ app.add('Finds a song and plays it',
     const artist = intent.p2
     const song = `${artist} ${track}`
     utils.exec(`spotify play "${song}"`, (err, stdout, stdin) => {
-      const e = err || (/no results/gi.test(stdout) && `no music found for "${song}"`)
-      if(e) return cb(e, cmd)
-      getStatus((ctx) => {
-        debugInfo(ai)
-        cb(null, cmd)
-      })
+      if(err || /no results/gi.test(stdout)) 
+        return cb(`no music found for "${song}"`, cmd)
+      getStatus((ctx) => cb(null, cmd, ctx.info))
     })
   })
 
@@ -164,14 +138,18 @@ app.add('Finds an artist and plays it',
   /joue/, 
   /.*/,
   (cmd, intent, ai, cb) => {
-    const song = intent.p1
-    utils.exec(`spotify play artist "${song}"`, (err, stdout, stdin) => {
-      const e = err || (/no results/gi.test(stdout) && `no music found for "${song}"`)
-      if(e) return cb(e, cmd)
-      getStatus((ctx) => {
-        debugInfo(ai)
-        cb(null, cmd)
-      })
+    const artist = intent.p1
+
+    // first find artist, then fallback to song
+    utils.exec(`spotify play artist "${artist}"`, (err, stdout, stdin) => {
+      if(err || /no results/gi.test(stdout)) 
+        return utils.exec(`spotify play "${artist}"`, (err, stdout, stdin) => {
+          if(err || /no results/gi.test(stdout)) 
+            return cb(`no music found for "${artist}"`, cmd)
+          getStatus((ctx) => cb(null, cmd, ctx.info))
+        })
+      
+      getStatus((ctx) => cb(null, cmd, ctx.info))
     })
   })
 
@@ -181,7 +159,6 @@ app.add('Adjust volume',
   (cmd, intent, ai, cb) => {
     let vol = /augmente/.test(intent.action) ? 'up' : 'down'
     utils.exec(`spotify vol ${vol}`)
-    ai.debug(`volume: ${vol}`)
     cb(null, cmd)
   })
 
@@ -192,7 +169,6 @@ app.add('Set volume',
   (cmd, intent, ai, cb) => {
     let vol = intent.p2.match(cmd.p2)[0]
     utils.exec(`spotify vol ${vol}`)
-    ai.debug(`volume: ${vol}`)
     cb(null, cmd)
   })
 

@@ -8,6 +8,8 @@ const splash = `
    ██   ██    ██████    ██   ██   ██████    ███████   ██   ████   █  version 1.0.0
 ` // end quote
 
+
+
 module.exports = () => {
   process.stdout.write(clc
     .xterm(15)

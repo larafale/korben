@@ -12,6 +12,10 @@ utils.exec = exec
 // notifier
 utils.notify = (message, options = {}) => {
   const n = require('node-notifier')
+  
+  if(typeof message == 'object')
+    message = utils.pjson(message, 0)
+
   n.notify(utils.merge({
     title: 'Korben',
     message

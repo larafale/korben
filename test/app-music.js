@@ -71,7 +71,7 @@ describe('music app', function() {
   })
 
   it('Finds a song and plays it', (next)=>{ cid++
-    ai.process('tu peux me jouer mystere et suspense de fonky family', true, (err, cmd)=>{
+    ai.process('tu peux me jouer mystere et suspense par fonky family', true, (err, cmd)=>{
       const intent = cmd && cmd.intent
       assert.equal(cid, cmd.cid)
       assert.equal(intent.p1, 'mystere et suspense')
